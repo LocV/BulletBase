@@ -148,7 +148,7 @@ const Dashboard = () => {
             )}
           </div>
           <div className="header-actions">
-            <button className="btn btn-primary">+ New Load Development</button>
+            <Link to="/load/new" className="btn btn-primary">+ New Load Development</Link>
             <button className="btn btn-secondary">+ New Session</button>
             <button className="btn btn-logout" onClick={handleLogout}>Logout</button>
           </div>

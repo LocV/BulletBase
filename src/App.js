@@ -5,6 +5,7 @@ import Home from './components/Home';
 import SignUp from './components/SignUp';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import NewLoadDevelopment from './components/NewLoadDevelopment';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -24,6 +25,11 @@ function App() {
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/load/new" element={
+              <ProtectedRoute>
+                <NewLoadDevelopment />
               </ProtectedRoute>
             } />
           </Routes>

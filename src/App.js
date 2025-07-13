@@ -6,6 +6,8 @@ import SignUp from './components/SignUp';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import NewLoadDevelopment from './components/NewLoadDevelopment';
+import LoadDevelopments from './components/LoadDevelopments';
+import Admin from './components/Admin';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -30,6 +32,16 @@ function App() {
             <Route path="/load/new" element={
               <ProtectedRoute>
                 <NewLoadDevelopment />
+              </ProtectedRoute>
+            } />
+            <Route path="/loads" element={
+              <ProtectedRoute>
+                <LoadDevelopments />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <Admin />
               </ProtectedRoute>
             } />
           </Routes>

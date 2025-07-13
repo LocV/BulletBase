@@ -105,6 +105,7 @@
   font-size: 16px;
   transition: all 0.3s ease;
   background: #fafbfc;
+  color: #333;
 }
 
 .form-group input:focus,

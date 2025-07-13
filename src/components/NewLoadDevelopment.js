@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase/config';
+import { useAuth } from '../contexts/AuthContext';
 import './NewLoadDevelopment.css';
 
 const NewLoadDevelopment = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     cartridge: '',
@@ -97,19 +101,18 @@ const NewLoadDevelopment = () => {
       // Format the data for storage
       const loadData = {
         ...formData,
-        id: Date.now(), // Temporary ID generation
+        userId: currentUser.uid,
         status: 'Planning',
         sessions: 0,
         bestGroup: null,
-        createdAt: new Date().toISOString(),
-        lastTested: null
+        createdAt: serverTimestamp(),
+        lastTested: null,
+        updatedAt: serverTimestamp()
       };
 
-      // Here you would typically save to your database
-      console.log('Creating new load development:', loadData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Save to Firestore
+      const docRef = await addDoc(collection(db, 'loadDevelopment'), loadData);
+      console.log('Load development created with ID:', docRef.id);
       
       // Navigate back to dashboard
       navigate('/dashboard');
@@ -194,10 +197,10 @@ const NewLoadDevelopment = () => {
             
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="bullet.weight">Weight (grains) *</label>
+                <label htmlFor="bullet-weight">Weight (grains) *</label>
                 <input
                   type="number"
-                  id="bullet.weight"
+                  id="bullet-weight"
                   name="bullet.weight"
                   value={formData.bullet.weight}
                   onChange={handleChange}
@@ -209,10 +212,10 @@ const NewLoadDevelopment = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="bullet.manufacturer">Manufacturer</label>
+                <label htmlFor="bullet-manufacturer">Manufacturer</label>
                 <input
                   type="text"
-                  id="bullet.manufacturer"
+                  id="bullet-manufacturer"
                   name="bullet.manufacturer"
                   value={formData.bullet.manufacturer}
                   onChange={handleChange}
@@ -222,10 +225,10 @@ const NewLoadDevelopment = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="bullet.type">Bullet Type *</label>
+              <label htmlFor="bullet-type">Bullet Type *</label>
               <input
                 type="text"
-                id="bullet.type"
+                id="bullet-type"
                 name="bullet.type"
                 value={formData.bullet.type}
                 onChange={handleChange}
@@ -242,10 +245,10 @@ const NewLoadDevelopment = () => {
             
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="powder.type">Powder Type *</label>
+                <label htmlFor="powder-type">Powder Type *</label>
                 <input
                   type="text"
-                  id="powder.type"
+                  id="powder-type"
                   name="powder.type"
                   value={formData.powder.type}
                   onChange={handleChange}
@@ -256,10 +259,10 @@ const NewLoadDevelopment = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="powder.weight">Starting Weight (grains)</label>
+                <label htmlFor="powder-weight">Starting Weight (grains)</label>
                 <input
                   type="number"
-                  id="powder.weight"
+                  id="powder-weight"
                   name="powder.weight"
                   value={formData.powder.weight}
                   onChange={handleChange}

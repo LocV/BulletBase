@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase/config';
 import { useAuth } from '../contexts/AuthContext';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const [loadDevelopments, setLoadDevelopments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleLogout = async () => {
     try {
@@ -16,51 +20,58 @@ const Dashboard = () => {
     }
   };
 
-  // Mock data for load developments
-  const [loadDevelopments] = useState([
-    {
-      id: 1,
-      name: ".308 Win - Match Load",
-      cartridge: ".308 Winchester",
-      bullet: "175gr Sierra MatchKing",
-      powder: "Varget 43.5gr",
-      primer: "CCI BR2",
-      brass: "Lapua",
-      status: "In Progress",
-      sessions: 4,
-      bestGroup: "0.47 MOA",
-      lastTested: "2025-01-05",
-      notes: "Showing excellent consistency. Need to test at 600 yards."
-    },
-    {
-      id: 2,
-      name: "6.5 Creedmoor - Hunting Load",
-      cartridge: "6.5 Creedmoor",
-      bullet: "140gr Nosler AccuBond",
-      powder: "H4350 41.2gr",
-      primer: "Federal 210M",
-      brass: "Hornady",
-      status: "Testing",
-      sessions: 2,
-      bestGroup: "0.68 MOA",
-      lastTested: "2025-01-03",
-      notes: "Good velocity, testing different seating depths."
-    },
-    {
-      id: 3,
-      name: ".223 Rem - Varmint Load",
-      cartridge: ".223 Remington",
-      bullet: "55gr Hornady V-MAX",
-      powder: "CFE 223 25.8gr",
-      primer: "CCI 400",
-      brass: "Winchester",
-      status: "Complete",
-      sessions: 6,
-      bestGroup: "0.34 MOA",
-      lastTested: "2024-12-28",
-      notes: "Excellent accuracy achieved. Load finalized for prairie dogs."
+  // Load data from Firestore
+  useEffect(() => {
+    if (!currentUser) {
+      console.log('No current user, skipping load development query');
+      setIsLoading(false);
+      return;
     }
-  ]);
+
+    console.log('Setting up load development query for user:', currentUser.uid);
+    setIsLoading(true);
+
+    const q = query(
+      collection(db, 'loadDevelopment'),
+      where('userId', '==', currentUser.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      console.log('Query snapshot received, size:', querySnapshot.size);
+      const loads = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log('Processing document:', doc.id, data);
+        loads.push({
+          id: doc.id,
+          ...data,
+          // Format bullet and powder for display
+          bullet: data.bullet ? `${data.bullet.weight}gr ${data.bullet.type}` : '',
+          powder: data.powder ? `${data.powder.type} ${data.powder.weight}gr` : '',
+          // Convert Firestore timestamp to date string
+          lastTested: data.lastTested ? data.lastTested.toDate().toISOString().split('T')[0] : null,
+          createdAt: data.createdAt ? data.createdAt.toDate().toISOString().split('T')[0] : null
+        });
+      });
+      
+      // Sort by createdAt descending (most recent first)
+      loads.sort((a, b) => {
+        if (!a.createdAt && !b.createdAt) return 0;
+        if (!a.createdAt) return 1;
+        if (!b.createdAt) return -1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      
+      console.log('Processed loads:', loads);
+      setLoadDevelopments(loads);
+      setIsLoading(false);
+    }, (error) => {
+      console.error('Error loading load developments:', error);
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
 
   // Mock data for shooting sessions
   const [shootingSessions] = useState([
@@ -187,9 +198,19 @@ const Dashboard = () => {
             <h2>Load Developments</h2>
             <Link to="/loads" className="view-all-link">View All →</Link>
           </div>
-          <div className="cards-grid">
-            {loadDevelopments.map(load => (
-              <div key={load.id} className="load-card">
+          {isLoading ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#aaa' }}>
+              Loading load developments...
+            </div>
+          ) : loadDevelopments.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#aaa' }}>
+              <p>No load developments found.</p>
+              <Link to="/load/new" className="btn btn-primary">Create Your First Load</Link>
+            </div>
+          ) : (
+            <div className="cards-grid">
+              {loadDevelopments.map(load => (
+                <div key={load.id} className="load-card">
                 <div className="card-header">
                   <h3>{load.name}</h3>
                   <span 
@@ -235,8 +256,9 @@ const Dashboard = () => {
                   )}
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Shooting Sessions */}
@@ -294,6 +316,11 @@ const Dashboard = () => {
           </div>
         </section>
       </main>
+      
+      {/* Admin Link */}
+      <footer className="dashboard-footer">
+        <Link to="/admin" className="admin-link">Admin Panel</Link>
+      </footer>
     </div>
   );
 };

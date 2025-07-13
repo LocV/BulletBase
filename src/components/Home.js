@@ -34,7 +34,6 @@ const Home = () => {
         <div className="cta-section">
           <Link to="/signup" className="cta-button">Get Started</Link>
           <Link to="/login" className="cta-button secondary">Login</Link>
-          <button className="cta-button secondary">Learn More</button>
         </div>
       </div>
     </div>

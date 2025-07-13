@@ -1,0 +1,92 @@
+.admin-container {
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 50%, #d0d0d0 100%);
+  min-height: 100vh;
+  color: #333;
+  padding: 20px;
+}
+
+.admin-header {
+  padding: 20px;
+  background-color: #444;
+  color: white;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.admin-header h1 {
+  margin: 10px 0;
+  font-size: 2.5rem;
+}
+
+.admin-header p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.back-button {
+  align-self: flex-start;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #ff6b6b;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.back-button:hover {
+  color: #ff8e8e;
+}
+
+.admin-main {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.admin-section {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-section h2 {
+  margin-top: 0;
+}
+
+.info-card, .status-card {
+  padding: 15px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.status-grid {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.status-card {
+  flex: 1;
+  max-width: 200px;
+  text-align: center;
+  margin: 10px;
+}
+
+.status-indicator {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.status-indicator.online {
+  background: #c8e6c9;
+  color: #388e3c;
+}

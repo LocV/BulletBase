@@ -178,14 +178,23 @@ header h1 {
   margin-bottom: 15px;
 }
 
-.detail-row, .detail-grid {
+.detail-row {
   display: flex;
   justify-content: space-between;
   margin-top: 5px;
 }
 
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 20px;
+  margin-top: 10px;
+}
+
 .detail-item {
-  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .label {
@@ -223,6 +232,30 @@ header h1 {
 .location {
   font-size: 0.9rem;
   color: #cccccc;
+}
+
+.session-summary {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.rounds-count, .cartridge-info {
+  font-size: 0.9rem;
+  color: #cccccc;
+  white-space: nowrap;
+}
+
+.detail-item .label {
+  font-size: 0.85rem;
+  margin-bottom: 2px;
+}
+
+.detail-item .value {
+  font-size: 0.9rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 768px) {
@@ -268,8 +301,19 @@ header h1 {
     padding: 15px;
   }
 
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
   .detail-item {
     min-width: auto;
+  }
+  
+  .session-summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
   }
 }
 

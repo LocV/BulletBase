@@ -7,6 +7,8 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import NewLoadDevelopment from './components/NewLoadDevelopment';
 import LoadDevelopments from './components/LoadDevelopments';
+import NewShootingSession from './components/NewShootingSession';
+import SessionLogging from './components/SessionLogging';
 import Admin from './components/Admin';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
@@ -37,6 +39,16 @@ function App() {
             <Route path="/loads" element={
               <ProtectedRoute>
                 <LoadDevelopments />
+              </ProtectedRoute>
+            } />
+            <Route path="/session/new" element={
+              <ProtectedRoute>
+                <NewShootingSession />
+              </ProtectedRoute>
+            } />
+            <Route path="/session/:sessionId" element={
+              <ProtectedRoute>
+                <SessionLogging />
               </ProtectedRoute>
             } />
             <Route path="/admin" element={

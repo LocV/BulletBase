@@ -10,6 +10,8 @@ import LoadDevelopments from './components/LoadDevelopments';
 import NewShootingSession from './components/NewShootingSession';
 import SessionLogging from './components/SessionLogging';
 import AddFirearm from './components/AddFirearm';
+import EditFirearm from './components/EditFirearm';
+import Firearms from './components/Firearms';
 import Admin from './components/Admin';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
@@ -55,6 +57,16 @@ function App() {
             <Route path="/add-firearm" element={
               <ProtectedRoute>
                 <AddFirearm />
+              </ProtectedRoute>
+            } />
+            <Route path="/firearms" element={
+              <ProtectedRoute>
+                <Firearms />
+              </ProtectedRoute>
+            } />
+            <Route path="/edit-firearm/:firearmId" element={
+              <ProtectedRoute>
+                <EditFirearm />
               </ProtectedRoute>
             } />
             <Route path="/admin" element={

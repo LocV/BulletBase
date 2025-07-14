@@ -250,11 +250,69 @@ const Dashboard = () => {
           </div>
         </section>
 
+        {/* Shooting Sessions */}
+        <section className="content-section">
+          <div className="section-header">
+            <h2>Recent Shooting Sessions</h2>
+            <Link to="/sessions" className="view-all-link">View All →</Link>
+          </div>
+          <div className="cards-grid">
+            {shootingSessions.map(session => (
+              <div key={session.id} className="session-card">
+                <div className="session-header">
+                  <div className="session-date">
+                    <h4>{formatDate(session.date)}</h4>
+                    <span className="location">{session.location}</span>
+                  </div>
+                  <div className="session-summary">
+                    <span className="rounds-count">{session.rounds} rounds</span>
+                    <span className="cartridge-info">{session.cartridge}</span>
+                  </div>
+                </div>
+                <div className="session-content">
+                  <div className="session-details">
+                    <div className="detail-grid">
+                      <div className="detail-item">
+                        <span className="label">Load:</span>
+                        <span className="value">{session.load}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">Weather:</span>
+                        <span className="value">{session.weather}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">Avg Group:</span>
+                        <span className="value">{session.avgGroup}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">Best Group:</span>
+                        <span className="value highlight">{session.bestGroup}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">Velocity:</span>
+                        <span className="value">{session.velocity}</span>
+                      </div>
+                    </div>
+                  </div>
+                  {session.notes && (
+                    <div className="session-notes">
+                      <p>{session.notes}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Load Developments */}
         <section className="content-section">
           <div className="section-header">
             <h2>Load Developments</h2>
-            <Link to="/loads" className="view-all-link">View All →</Link>
+            <div className="section-actions">
+              <Link to="/load/new" className="btn btn-primary">Start New Load</Link>
+              <Link to="/loads" className="view-all-link">View All →</Link>
+            </div>
           </div>
           {isLoading ? (
             <div style={{ textAlign: 'center', padding: '40px', color: '#aaa' }}>
@@ -391,60 +449,6 @@ const Dashboard = () => {
           )}
         </section>
 
-        {/* Shooting Sessions */}
-        <section className="content-section">
-          <div className="section-header">
-            <h2>Recent Shooting Sessions</h2>
-            <Link to="/sessions" className="view-all-link">View All →</Link>
-          </div>
-          <div className="sessions-list">
-            {shootingSessions.map(session => (
-              <div key={session.id} className="session-card">
-                <div className="session-header">
-                  <div className="session-date">
-                    <h4>{formatDate(session.date)}</h4>
-                    <span className="location">{session.location}</span>
-                  </div>
-                  <div className="session-summary">
-                    <span className="rounds-count">{session.rounds} rounds</span>
-                    <span className="cartridge-info">{session.cartridge}</span>
-                  </div>
-                </div>
-                <div className="session-content">
-                  <div className="session-details">
-                    <div className="detail-grid">
-                      <div className="detail-item">
-                        <span className="label">Load:</span>
-                        <span className="value">{session.load}</span>
-                      </div>
-                      <div className="detail-item">
-                        <span className="label">Weather:</span>
-                        <span className="value">{session.weather}</span>
-                      </div>
-                      <div className="detail-item">
-                        <span className="label">Avg Group:</span>
-                        <span className="value">{session.avgGroup}</span>
-                      </div>
-                      <div className="detail-item">
-                        <span className="label">Best Group:</span>
-                        <span className="value highlight">{session.bestGroup}</span>
-                      </div>
-                      <div className="detail-item">
-                        <span className="label">Velocity:</span>
-                        <span className="value">{session.velocity}</span>
-                      </div>
-                    </div>
-                  </div>
-                  {session.notes && (
-                    <div className="session-notes">
-                      <p>{session.notes}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
       </main>
       
       {/* Admin Link */}

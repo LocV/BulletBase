@@ -9,7 +9,9 @@ const Dashboard = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [loadDevelopments, setLoadDevelopments] = useState([]);
+  const [firearms, setFirearms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingFirearms, setIsLoadingFirearms] = useState(true);
 
   const handleLogout = async () => {
     try {
@@ -68,6 +70,57 @@ const Dashboard = () => {
     }, (error) => {
       console.error('Error loading load developments:', error);
       setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
+
+  // Load firearms from Firestore
+  useEffect(() => {
+    if (!currentUser) {
+      console.log('No current user, skipping firearms query');
+      setIsLoadingFirearms(false);
+      return;
+    }
+
+    console.log('Setting up firearms query for user:', currentUser.uid);
+    setIsLoadingFirearms(true);
+
+    const q = query(
+      collection(db, 'firearms'),
+      where('userId', '==', currentUser.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      console.log('Firearms query snapshot received, size:', querySnapshot.size);
+      const firearmsList = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log('Processing firearm document:', doc.id, data);
+        firearmsList.push({
+          id: doc.id,
+          ...data,
+          // Convert Firestore timestamp to date string
+          purchaseDate: data.purchaseDate || null,
+          lastCleaned: data.lastCleaned || null,
+          createdAt: data.createdAt ? data.createdAt.toDate().toISOString().split('T')[0] : null
+        });
+      });
+      
+      // Sort by createdAt descending (most recent first)
+      firearmsList.sort((a, b) => {
+        if (!a.createdAt && !b.createdAt) return 0;
+        if (!a.createdAt) return 1;
+        if (!b.createdAt) return -1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      
+      console.log('Processed firearms:', firearmsList);
+      setFirearms(firearmsList);
+      setIsLoadingFirearms(false);
+    }, (error) => {
+      console.error('Error loading firearms:', error);
+      setIsLoadingFirearms(false);
     });
 
     return () => unsubscribe();
@@ -176,6 +229,11 @@ const Dashboard = () => {
             <div className="stat-label">Active developments</div>
           </div>
           <div className="stat-card">
+            <h3>Firearms</h3>
+            <div className="stat-number">{firearms.length}</div>
+            <div className="stat-label">Registered</div>
+          </div>
+          <div className="stat-card">
             <h3>Recent Sessions</h3>
             <div className="stat-number">{shootingSessions.length}</div>
             <div className="stat-label">This month</div>
@@ -257,6 +315,78 @@ const Dashboard = () => {
                 </div>
               </div>
               ))}
+            </div>
+          )}
+        </section>
+
+        {/* Firearms */}
+        <section className="content-section">
+          <div className="section-header">
+            <h2>Firearms</h2>
+            <div className="section-actions">
+              <Link to="/add-firearm" className="btn btn-primary">Add Firearm</Link>
+              <Link to="/firearms" className="view-all-link">View All →</Link>
+            </div>
+          </div>
+          {isLoadingFirearms ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#aaa' }}>
+              Loading firearms...
+            </div>
+          ) : firearms.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#aaa' }}>
+              <p>No firearms found.</p>
+              <Link to="/add-firearm" className="btn btn-primary">Add Your First Firearm</Link>
+            </div>
+          ) : (
+            <div className="cards-grid">
+              {firearms.map(firearm => (
+                <div key={firearm.id} className="firearm-card">
+                <div className="card-header">
+                  <h3>{firearm.name}</h3>
+                  <span 
+                    className="status-badge"
+                    style={{ backgroundColor: firearm.status === 'Active' ? '#6bcf7f' : '#a0a0a0' }}
+                  >
+                    {firearm.status}
+                  </span>
+                </div>
+                <div className="card-content">
+                  <div className="firearm-details">
+                    <div className="detail-row">
+                      <span className="label">Make/Model:</span>
+                      <span className="value">{firearm.make} {firearm.model}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span className="label">Caliber:</span>
+                      <span className="value">{firearm.caliber}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span className="label">Barrel:</span>
+                      <span className="value">{firearm.barrelLength} ({firearm.twist})</span>
+                    </div>
+                    <div className="detail-row">
+                      <span className="label">Scope:</span>
+                      <span className="value">{firearm.scope}</span>
+                    </div>
+                  </div>
+                  <div className="card-stats">
+                    <div className="stat-item">
+                      <span className="stat-value">{firearm.roundCount}</span>
+                      <span className="stat-label">Round Count</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-value">{formatDate(firearm.lastCleaned)}</span>
+                      <span className="stat-label">Last Cleaned</span>
+                    </div>
+                  </div>
+                  {firearm.notes && (
+                    <div className="card-notes">
+                      <p>{firearm.notes}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
             </div>
           )}
         </section>
